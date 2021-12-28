@@ -18,12 +18,15 @@ destination = str(input(">> ")) or '.'
 cnt = 0
 for video in c.videos:
   # download the file
-  out_file = video.streams.filter(only_audio=True).first().download(output_path=destination)
+  out_file_mp4 = video.streams.filter(only_audio=True).first().download(output_path=destination)
+  out_file_mp3 = out_file_mp4.replace('mp4', 'mp3')
 
-  # save the file
-  base, ext = os.path.splitext(out_file)
-  new_file = base + '.mp3'
-  os.rename(out_file, new_file)
+  # convert the file
+  cmd = f'ffmpeg -i "{out_file_mp4}" -vn "{out_file_mp3}"'
+  os.system(cmd)
+
+  # remove the old file
+  os.remove(out_file_mp4)
 
   # result of success
   print(f'"{video.title}" has been successfully downloaded')
